@@ -20,7 +20,7 @@ void l_insertar(tLista l, tPosicion p, tElemento e){
     p->siguiente = nuevaCelda;
 }
 
-void l_eliminar(tLista l, tPosicion p, void(* fEliminar)(tElemento)){
+void l_eliminar(tLista l, tPosicion p, void (* fEliminar)(tElemento)){
     tPosicion aux;
     if(p->siguiente == NULL){
         exit(LST_POSICION_INVALIDA);
@@ -33,7 +33,7 @@ void l_eliminar(tLista l, tPosicion p, void(* fEliminar)(tElemento)){
     aux = NULL;
 }
 
-void l_destruirAux(tPosicion p, void(* fEliminar)(tElemento)){
+void l_destruirAux(tPosicion p, void (* fEliminar)(tElemento)){
     tPosicion aux;
     if(p->siguiente->siguiente != NULL){
         l_destruirAux(p->siguiente, fEliminar);
@@ -46,7 +46,7 @@ void l_destruirAux(tPosicion p, void(* fEliminar)(tElemento)){
     aux = NULL;
 }
 
-void l_destruir(tLista* l, void(* fEliminar)(tElemento)){
+void l_destruir(tLista* l, void (* fEliminar)(tElemento)){
     tPosicion primera = l_primera(*l);
     if(primera->siguiente != NULL){
         l_destruirAux(primera, fEliminar);
