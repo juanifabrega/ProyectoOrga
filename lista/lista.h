@@ -19,7 +19,7 @@ typedef void * tElemento;
 
 // ---------------------------------------------------------------------------------------------
 // Definición de prototipos y documentación de las funciones.
-// Obs.: a todo efecto y en tanto no se indique lo contrario, toda posición parametrizada
+// Obs.: a todo_ efecto y en tanto no se indique lo contrario, toda posición parametrizada
 // es considerada válida.
 // ---------------------------------------------------------------------------------------------
 

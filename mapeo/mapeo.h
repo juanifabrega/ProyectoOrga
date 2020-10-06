@@ -7,12 +7,12 @@
 #define MAP_ERROR_MEMORIA 100
 
 // Structs para la manipulación de un mapeo.
-struct entrada{
+struct entrada {
     void * clave;
     void * valor;
 };
 
-struct mapeo{
+struct mapeo {
     unsigned int longitud_tabla;
     unsigned int cantidad_elementos;
     int (*hash_code)(void *);
@@ -27,15 +27,15 @@ typedef struct mapeo * tMapeo;
 
 // ---------------------------------------------------------------------------------------------
 // Definicion de prototipos y documentacion de las funciones.
-// Obs.: la tabla hash debe mantener control del factor de carga en todo momento.
+// Obs.: la tabla hash debe mantener control del factor de carga en todo_ momento.
 // Obs.: el factor de carga maximo permitido equivale al 75% de la longitud de la tabla.
 // ---------------------------------------------------------------------------------------------
 
 /**
  Inicializa un mapeo vacio, con capacidad inicial igual al MAX(10, CI).
  Una referencia al mapeo creado es referenciada en *M.
- A todo efecto, el valor hash para las claves sera computado mediante la funcion fHash.
- A todo efecto, la comparacion de claves se realizara mediante la funcion fComparacion.
+ A todo_ efecto, el valor hash para las claves sera computado mediante la funcion fHash.
+ A todo_ efecto, la comparacion de claves se realizara mediante la funcion fComparacion.
  Finaliza indicando MAP_ERROR_MEMORIA si no es posible reservar memoria correspondientemente.
 **/
 extern void crear_mapeo(tMapeo * m, int ci, int (*fHash)(void *), int (*fComparacion)(void *, void *));
