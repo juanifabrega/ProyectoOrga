@@ -20,10 +20,7 @@ int hashCode(tClave key){
 }
 
 int comparator(tClave k1, tClave k2){
-    if(k1 < k2){
-        return 1;
-    }
-    return 0;
+    return strcmp(k1, k2);
 }
 
 int main() {
@@ -41,5 +38,9 @@ int main() {
     printf("Hi in Spanish: %s\n", m_recuperar(m, c1));
     m_eliminar(m, c1, fEliminarCV, fEliminarCV);
     printf("Hi in Spanish deleted: %s\n", m_recuperar(m, c1));
+    m_destruir(&m, fEliminarCV, fEliminarCV);
+    if(m != NULL){
+        return 2;
+    }
     return 0;
 }

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "lista.h"
 
-void crear_lista(tLista* l){
+void crear_lista(tLista * l){
     *l = (tLista) malloc(sizeof(struct celda));
     if(l == NULL){
         exit(LST_ERROR_MEMORIA);
