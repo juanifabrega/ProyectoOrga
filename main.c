@@ -1,9 +1,16 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 #include "mapeo/mapeo.h"
 
 #define SIZE 101
+
+/**
+ * Elimina el elemento e
+ * @param e el elemento
+ */
+void fEliminarCV(void * e){
+    e = NULL;
+}
 
 int hashCode(tClave key){
     if(key < 0){
@@ -32,5 +39,7 @@ int main() {
     printf("Hola: %s\n", m_recuperar(m, c2));
     m_insertar(m, c1, c2);
     printf("Hi in Spanish: %s\n", m_recuperar(m, c1));
+    m_eliminar(m, c1, fEliminarCV, fEliminarCV);
+    printf("Hi in Spanish deleted: %s\n", m_recuperar(m, c1));
     return 0;
 }

@@ -75,7 +75,32 @@ tValor m_insertar(tMapeo m, tClave c, tValor v){
 }
 
 void m_eliminar(tMapeo m, tClave c, void (*fEliminarC)(void *), void (*fEliminarV)(void *)){
-
+    int index = m->hash_code(c);
+    tPosicion pos = l_primera(m->tabla_hash);
+    tLista indexed_list;
+    int indexed_list_length;
+    tPosicion indexed_list_position;
+    for(int i = 0, found = 0; !found && i < m->longitud_tabla; i++){
+        found = i == index;
+        if(found){
+            indexed_list = pos->elemento;
+            indexed_list_length = l_longitud(indexed_list);
+            indexed_list_position = l_primera(indexed_list);
+            for(int j = 0, found_indexed = 0; !found_indexed && j < indexed_list_length; j++){
+                tEntrada indexed_entry = l_recuperar(indexed_list, indexed_list_position);
+                found_indexed = indexed_entry->clave == c;
+                if(found_indexed){
+                    fEliminarC(indexed_entry->clave);
+                    fEliminarV(indexed_entry->valor);
+                    l_eliminar(indexed_list, indexed_list_position, fEliminar);
+                } else {
+                    indexed_list_position = l_siguiente(indexed_list, indexed_list_position);
+                }
+            }
+        } else if(pos != NULL){
+            pos = l_siguiente(*m->tabla_hash, pos);
+        }
+    }
 }
 
 void m_destruir(tMapeo * m, void (*fEliminarC)(void *), void (*fEliminarV)(void *)){
