@@ -7,9 +7,9 @@
 
 int hashCode(tClave key){
     if(key < 0){
-        return -(key % SIZE);
+        return -(strlen(key) % SIZE);
     }
-    return key % SIZE;
+    return strlen(key) % SIZE;
 }
 
 int comparator(tClave k1, tClave k2){
@@ -20,9 +20,15 @@ int comparator(tClave k1, tClave k2){
 }
 
 int main() {
-    tMapeo m = (tMapeo) malloc(sizeof(struct mapeo));
+    tMapeo m = NULL;
     crear_mapeo(&m, SIZE, hashCode, comparator);
-    m_insertar(m, "Hi", "Bye");
-    printf("Hi: %s", m_recuperar(m, "Hi"));
+    tClave c1 = "Hi";
+    tValor v1 = "Bye";
+    tClave c2 = "Hola";
+    tValor v2 = "Chau";
+    m_insertar(m, c1, v1);
+    m_insertar(m, c2, v2);
+    printf("Hi: %s\n", m_recuperar(m, "Hi"));
+    printf("Hola: %s", m_recuperar(m, "Hola"));
     return 0;
 }

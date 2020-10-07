@@ -32,10 +32,11 @@ void crear_mapeo(tMapeo * m, int ci, int (*fHash)(void *), int (*fComparacion)(v
     (*m)->hash_code = fHash;
     (*m)->comparador = fComparacion;
     (*m)->tabla_hash = NULL;
-    crear_lista((*m)->tabla_hash);
+    crear_lista(&((*m)->tabla_hash));
     for(int i = 0; i < capacity; i++){
         list = (tLista) malloc(sizeof(struct celda));
-        l_insertar(*(*m)->tabla_hash, l_ultima(*(*m)->tabla_hash), list);
+        crear_lista(&list);
+        l_insertar((*m)->tabla_hash, l_ultima((*m)->tabla_hash), list);
     }
 }
 
@@ -44,14 +45,14 @@ tValor m_insertar(tMapeo m, tClave c, tValor v){
     tLista indexed_list;
     int indexed_list_length;
     tPosicion indexed_list_position;
-    tPosicion pos = l_primera(*m->tabla_hash);
+    tPosicion pos = l_primera(m->tabla_hash);
     tEntrada entry = (tEntrada) malloc(sizeof(struct entrada));
     if(entry == NULL){
         exit(MAP_ERROR_MEMORIA);
     }
     entry->clave = c;
     entry->valor = v;
-    for(int i = 0, found = 0; !found && i < index; i++){
+    for(int i = 0, found = 0; !found && i < m->longitud_tabla; i++){
         found = i == index;
         if(found){
             indexed_list = pos->elemento;
@@ -67,7 +68,7 @@ tValor m_insertar(tMapeo m, tClave c, tValor v){
                 }
             }
             l_insertar(indexed_list, indexed_list_position, entry);
-        } else {
+        } else if(pos != NULL){
             pos = l_siguiente(*m->tabla_hash, pos);
         }
     }
@@ -84,11 +85,11 @@ void m_destruir(tMapeo * m, void (*fEliminarC)(void *), void (*fEliminarV)(void 
 tValor m_recuperar(tMapeo m, tClave c){
     tValor v = NULL;
     int index = m->hash_code(c);
-    tPosicion pos = l_primera(*m->tabla_hash);
+    tPosicion pos = l_primera(m->tabla_hash);
     tLista indexed_list;
     int indexed_list_length;
     tPosicion indexed_list_position;
-    for(int i = 0, found = 0; !found && i < index; i++){
+    for(int i = 0, found = 0; !found && i < m->longitud_tabla; i++){
         found = i == index;
         if(found){
             indexed_list = pos->elemento;
@@ -103,7 +104,7 @@ tValor m_recuperar(tMapeo m, tClave c){
                     indexed_list_position = l_siguiente(indexed_list, indexed_list_position);
                 }
             }
-        } else {
+        } else if(pos != NULL){
             pos = l_siguiente(*m->tabla_hash, pos);
         }
     }
