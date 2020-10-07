@@ -72,7 +72,7 @@ tValor m_insertar(tMapeo m, tClave c, tValor v){
                     indexed_list_position = l_siguiente(indexed_list, indexed_list_position);
                 }
             }
-            l_insertar(indexed_list, indexed_list_position, entry); // For some reason, this insertion resets the hash table to only 1 cells instead of 101.
+            l_insertar(indexed_list, indexed_list_position, entry); // For some reason, this insertion resets the hash table to only 1 cell instead of 101.
             m->cantidad_elementos++;
         } else if(pos != pos_last){
             pos = l_siguiente(*m->tabla_hash, pos);
