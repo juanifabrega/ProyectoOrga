@@ -28,7 +28,9 @@ int main() {
     tValor v2 = "Chau";
     m_insertar(m, c1, v1);
     m_insertar(m, c2, v2);
-    printf("Hi: %s\n", m_recuperar(m, "Hi"));
-    printf("Hola: %s", m_recuperar(m, "Hola"));
+    printf("Hi: %s\n", m_recuperar(m, c1));
+    printf("Hola: %s\n", m_recuperar(m, c2));
+    m_insertar(m, c1, c2);
+    printf("Hi in Spanish: %s\n", m_recuperar(m, c1));
     return 0;
 }
