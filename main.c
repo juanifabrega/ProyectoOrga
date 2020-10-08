@@ -32,15 +32,16 @@ int main() {
     tValor v2 = "Chau";
     m_insertar(m, c1, v1);
     m_insertar(m, c2, v2);
-    printf("Hi: %s\n", m_recuperar(m, c1));
+    m_show(m);
+    /*printf("Hi: %s\n", m_recuperar(m, c1));
     printf("Hola: %s\n", m_recuperar(m, c2));
     m_insertar(m, c1, c2);
     printf("Hi in Spanish: %s\n", m_recuperar(m, c1));
-    m_eliminar(m, c1, fEliminarCV, fEliminarCV);
+    m_eliminar(m, c1, &fEliminarCV, &fEliminarCV);
     printf("Hi in Spanish deleted: %s\n", m_recuperar(m, c1));
-    m_destruir(&m, fEliminarCV, fEliminarCV);
+    m_destruir(&m, &fEliminarCV, &fEliminarCV);
     if(m != NULL){
         return 2;
-    }
+    }*/
     return 0;
 }
