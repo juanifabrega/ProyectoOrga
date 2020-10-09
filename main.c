@@ -12,15 +12,12 @@ void fEliminarCV(void * e){
     e = NULL;
 }
 
-int hashCode(tClave key){
-    if(key < 0){
-        return -(strlen(key) % SIZE);
-    }
-    return strlen(key) % SIZE;
+int hashCode(void * key){
+    return strlen(key) % SIZE > 0 ? 1 : 0;
 }
 
-int comparator(tClave k1, tClave k2){
-    return strcmp(k1, k2);
+int comparator(void * k1, void * k2){
+    return strcmp(k1, k2) == 0;
 }
 
 int main() {
@@ -31,9 +28,8 @@ int main() {
     tClave c2 = "Hola";
     tValor v2 = "Chau";
     m_insertar(m, c1, v1);
+    printf("Hi: %s\n", m_recuperar(m, c1));
     m_insertar(m, c2, v2);
-    m_show(m);
-    /*printf("Hi: %s\n", m_recuperar(m, c1));
     printf("Hola: %s\n", m_recuperar(m, c2));
     m_insertar(m, c1, c2);
     printf("Hi in Spanish: %s\n", m_recuperar(m, c1));
@@ -42,6 +38,6 @@ int main() {
     m_destruir(&m, &fEliminarCV, &fEliminarCV);
     if(m != NULL){
         return 2;
-    }*/
+    }
     return 0;
 }

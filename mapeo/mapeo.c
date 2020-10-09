@@ -78,8 +78,9 @@ tValor m_insertar(tMapeo m, tClave c, tValor v){
     }
     tValor old_v = NULL;
     int index = m->hash_code(c);
-    tPosicion pos = l_primera(*m->tabla_hash);
-    tPosicion pos_last = l_ultima(*m->tabla_hash);
+    tLista bucket = *m->tabla_hash;
+    tPosicion pos = l_primera(bucket);
+    tPosicion pos_last = l_ultima(bucket);
     tEntrada indexed_entry;
     tEntrada entry = (tEntrada) malloc(sizeof(struct entrada));
     if(entry == NULL){
@@ -87,15 +88,16 @@ tValor m_insertar(tMapeo m, tClave c, tValor v){
     }
     entry->clave = c;
     entry->valor = v;
+    printf("Length before inserting: %d\n", l_longitud(bucket));
     for(int i = 0, found = 0; !found && i < m->longitud_tabla; i++){
         found = i == index;
         if(found){
-            indexed_entry = l_recuperar(*m->tabla_hash, pos);
+            indexed_entry = l_recuperar(bucket, pos);
             if(indexed_entry == NULL){
                 // the slot is empty, insert the new entry.
-                l_insertar(*m->tabla_hash, pos, entry);
+                l_insertar(bucket, pos, entry);
                 // delete the position but do not delete the element because it is NULL and no memory was allocated.
-                l_eliminar(*m->tabla_hash, l_siguiente(*m->tabla_hash, pos), &fNoEliminar);
+                l_eliminar(bucket, l_siguiente(bucket, pos), &fNoEliminar);
             } else {
                 // the slot is not empty, check if the key is the same or find a new slot using linear probing.
                 if(m->comparador(indexed_entry->clave, c)){
@@ -107,94 +109,97 @@ tValor m_insertar(tMapeo m, tClave c, tValor v){
                     // the key is not the same, find a new slot using linear probing
                     int j = index + 1;
                     int index_found;
-                    pos = l_siguiente(*m->tabla_hash, pos);
+                    pos = l_siguiente(bucket, pos);
                     do {
-                        indexed_entry = l_recuperar(*m->tabla_hash, pos);
+                        indexed_entry = l_recuperar(bucket, pos);
                         index_found = indexed_entry == NULL;
                         if(!index_found){
                             j = (j + 1) % (int) m->longitud_tabla;
                             if(pos == pos_last){
                                 // reached the end of the table, keep looking from the beginning of the table
-                                pos = l_primera(*m->tabla_hash);
+                                pos = l_primera(bucket);
                             } else {
                                 // set up the next position to check
-                                pos = l_siguiente(*m->tabla_hash, pos);
+                                pos = l_siguiente(bucket, pos);
                             }
                         }
                     } while (!index_found && index != j);
                     // found an empty slot, insert the new entry.
-                    l_insertar(*m->tabla_hash, pos, entry);
+                    l_insertar(bucket, pos, entry);
                     // delete the position but do not delete the element because it is NULL and no memory was allocated.
-                    l_eliminar(*m->tabla_hash, l_siguiente(*m->tabla_hash, pos), &fNoEliminar);
+                    l_eliminar(bucket, l_siguiente(bucket, pos), &fNoEliminar);
                 }
             }
             m->cantidad_elementos++;
         } else if(pos != pos_last){
-            pos = l_siguiente(*m->tabla_hash, pos); // TODO: fix - this assignment changes the memory pointer for *m->tabla_hash
+            pos = l_siguiente(bucket, pos);
         }
     }
-    //printf("Hash table length after inserting: %d\n", l_longitud(*m->tabla_hash));
+    printf("Length after inserting: %d\n", l_longitud(bucket));
     return old_v;
 }
 
 void m_eliminar(tMapeo m, tClave c, void (*fEliminarC)(void *), void (*fEliminarV)(void *)){
     int index = m->hash_code(c);
-    tPosicion pos = l_primera(*m->tabla_hash);
-    tPosicion pos_last = l_ultima(*m->tabla_hash);
+    tLista bucket = *m->tabla_hash;
+    tPosicion pos = l_primera(bucket);
+    tPosicion pos_last = l_ultima(bucket);
     tEntrada indexed_entry;
+    int index_found;
     for(int i = 0, found = 0; !found && i < m->longitud_tabla; i++){
         found = i == index;
         if(found){
-            indexed_entry = l_recuperar(*m->tabla_hash, pos);
+            indexed_entry = l_recuperar(bucket, pos);
             if(indexed_entry != NULL){
                 // the slot is not empty, therefore the key exists. Check if the key is the same or find it using linear probing.
-                if(!m->comparador(indexed_entry->clave, c)){
+                index_found = m->comparador(indexed_entry->clave, c);
+                if(!index_found){
                     // the key is not the same, find the correct slot using linear probing.
                     int j = index + 1;
-                    int index_found;
-                    pos = l_siguiente(*m->tabla_hash, pos);
+                    pos = l_siguiente(bucket, pos);
                     do {
-                        indexed_entry = l_recuperar(*m->tabla_hash, pos);
+                        indexed_entry = l_recuperar(bucket, pos);
                         index_found = indexed_entry != NULL && m->comparador(indexed_entry->clave, c);
                         if(!index_found){
                             j = (j + 1) % (int) m->longitud_tabla;
                             if(pos == pos_last){
                                 // reached the end of the table, keep looking from the beginning of the table.
-                                pos = l_primera(*m->tabla_hash);
+                                pos = l_primera(bucket);
                             } else {
                                 // set up the next position to check.
-                                pos = l_siguiente(*m->tabla_hash, pos);
+                                pos = l_siguiente(bucket, pos);
                             }
                         }
                     } while (!index_found && index != j);
                 }
                 // insert a NULL entry to replace the one to be deleted.
-                l_insertar(*m->tabla_hash, pos, NULL);
+                l_insertar(bucket, pos, NULL);
                 // delete the position next to the current position, which has the key we were looking for, so that the key is fully deleted from the map.
-                l_eliminar(*m->tabla_hash, l_siguiente(*m->tabla_hash, pos), &fEliminar);
+                l_eliminar(bucket, l_siguiente(bucket, pos), &fEliminar);
             }
         } else if(pos != pos_last){
-            pos = l_siguiente(*m->tabla_hash, pos);
+            pos = l_siguiente(bucket, pos);
         }
     }
 }
 
 void m_destruir(tMapeo * m, void (*fEliminarC)(void *), void (*fEliminarV)(void *)){
     tEntrada indexed_entry;
-    tPosicion pos = l_primera(*(*m)->tabla_hash);
+    tLista bucket = *(*m)->tabla_hash;
+    tPosicion pos = l_primera(bucket);
     while(pos != NULL){
-        indexed_entry = l_recuperar(*(*m)->tabla_hash, pos);
+        indexed_entry = l_recuperar(bucket, pos);
         if(indexed_entry != NULL){
             // delete the key and value using the parameterized functions.
             fEliminarC(indexed_entry->clave);
             fEliminarV(indexed_entry->valor);
             // delete the entry freeing the memory space allocated for it.
-            l_eliminar(*(*m)->tabla_hash, pos, &fEliminar);
+            l_eliminar(bucket, pos, &fEliminar);
         } else {
             // delete the cell but not the entry because it is NULL and no memory was allocated.
-            l_eliminar(*(*m)->tabla_hash, pos, &fNoEliminar);
+            l_eliminar(bucket, pos, &fNoEliminar);
         }
-        pos = l_primera(*(*m)->tabla_hash);
+        pos = l_primera(bucket);
     }
     l_destruir((*m)->tabla_hash, &fEliminar);
     (*m)->longitud_tabla = 0;
@@ -209,31 +214,35 @@ void m_destruir(tMapeo * m, void (*fEliminarC)(void *), void (*fEliminarV)(void 
 tValor m_recuperar(tMapeo m, tClave c){
     tValor v = NULL;
     int index = m->hash_code(c);
-    tPosicion pos = l_primera(*m->tabla_hash);
-    tPosicion pos_last = l_ultima(*m->tabla_hash);
+    tLista bucket = *m->tabla_hash;
+    tPosicion pos = l_primera(bucket);
+    tPosicion pos_last = l_ultima(bucket);
     tEntrada indexed_entry;
+    printf("Length before getting: %d\n", l_longitud(bucket));
     for(int i = 0, found = 0; !found && i < m->longitud_tabla; i++){
         found = i == index;
         if(found){
-            indexed_entry = l_recuperar(*m->tabla_hash, pos);
+            indexed_entry = l_recuperar(bucket, pos);
             if(indexed_entry != NULL){
                 // the slot is not empty, therefore the key exists. Check if the key is the same or find it using linear probing.
-                if(!m->comparador(indexed_entry->clave, c)){
+                int index_found = m->comparador(indexed_entry->clave, c);
+                if(!index_found){
                     // the key is not the same, find the correct slot using linear probing
                     int j = index + 1;
-                    int index_found;
-                    pos = l_siguiente(*m->tabla_hash, pos);
+                    pos = l_siguiente(bucket, pos);
                     do {
-                        indexed_entry = l_recuperar(*m->tabla_hash, pos);
-                        index_found = indexed_entry != NULL && m->comparador(indexed_entry->clave, c);
+                        indexed_entry = l_recuperar(bucket, pos);
+                        if(indexed_entry != NULL){
+                            index_found = m->comparador(indexed_entry->clave, c);
+                        }
                         if(!index_found){
                             j = (j + 1) % (int) m->longitud_tabla;
                             if(pos == pos_last){
                                 // reached the end of the table, keep looking from the beginning of the table
-                                pos = l_primera(*m->tabla_hash);
+                                pos = l_primera(bucket);
                             } else {
                                 // set up the next position to check
-                                pos = l_siguiente(*m->tabla_hash, pos);
+                                pos = l_siguiente(bucket, pos);
                             }
                         }
                     } while (!index_found && index != j);
@@ -242,23 +251,9 @@ tValor m_recuperar(tMapeo m, tClave c){
                 v = indexed_entry->valor;
             }
         } else if(pos != pos_last){
-            pos = l_siguiente(*m->tabla_hash, pos);
+            pos = l_siguiente(bucket, pos);
         }
     }
+    printf("Length after getting: %d\n", l_longitud(bucket));
     return v;
-}
-
-void m_show(tMapeo m){
-    tPosicion pos = l_primera(*m->tabla_hash);
-    tPosicion pos_last = l_ultima(*m->tabla_hash);
-    tEntrada indexed_entry;
-    for(int i = 0; i < m->longitud_tabla; i++){
-        indexed_entry = l_recuperar(*m->tabla_hash, pos);
-        if(indexed_entry != NULL){
-            printf("Index: %i.\nKey: %s.\nValue: %s.\n\n", i, indexed_entry->clave, indexed_entry->valor);
-        }
-        if(pos != pos_last){
-            pos = l_siguiente(*m->tabla_hash, pos);
-        }
-    }
 }
