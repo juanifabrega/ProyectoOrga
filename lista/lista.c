@@ -89,7 +89,7 @@ tPosicion l_anterior(tLista l, tPosicion p){
 tPosicion l_ultima(tLista l){
     tPosicion primera = l_primera(l);
     tPosicion pos;
-    if(primera->siguiente == NULL || primera->siguiente->siguiente == NULL ){
+    if(primera->siguiente == NULL || primera->siguiente->siguiente == NULL){
         return l;
     }
     pos = primera;
