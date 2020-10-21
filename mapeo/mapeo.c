@@ -35,7 +35,7 @@ void fEliminar(tElemento e){
 void crear_mapeo(tMapeo * m, int ci, int (*fHash)(void *), int (*fComparacion)(void *, void *)){
     int capacity = max(ci, 10);
     *m = (tMapeo) malloc(sizeof(struct mapeo));
-    // check for memory errors
+    // check for memory errors.
     if(*m == NULL){
         exit(MAP_ERROR_MEMORIA);
     }
@@ -51,9 +51,7 @@ void crear_mapeo(tMapeo * m, int ci, int (*fHash)(void *), int (*fComparacion)(v
     }
     // insert empty lists in the map.
     for(int i = 0; i < capacity; i++){
-        tLista list;
-        crear_lista(&list);
-        (*m)->tabla_hash[i] = list;
+        crear_lista(&(*m)->tabla_hash[i]);
     }
 }
 
