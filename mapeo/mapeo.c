@@ -57,18 +57,35 @@ void crear_mapeo(tMapeo * m, int ci, int (*fHash)(void *), int (*fComparacion)(v
 
 void rehash(tMapeo * m){
     // reference the old array.
-    tLista old_array = *(*m)->tabla_hash;
+    tLista * old_hash_table = (*m)->tabla_hash;
     unsigned int old_length = (*m)->longitud_tabla;
     (*m)->longitud_tabla *= 2;
-    (*m)->cantidad_elementos = 0;
     // create the new bucket array.
-    tLista hash_table [(*m)->longitud_tabla];
-    (*m)->tabla_hash = hash_table;
+    tLista * hash_table = malloc((*m)->longitud_tabla * sizeof(tLista));
+    tLista old_list;
+    unsigned int old_list_length;
+    tPosicion old_list_pos;
+    tEntrada old_list_entry;
+    unsigned int index;
     // iterate through the old array to insert every entry into the new array.
     for(int i = 0; i < old_length; i++){
-        tEntrada entry = old_array[i].elemento;
-        m_insertar(*m, entry->clave, entry->valor);
+        // insert the entries
+        old_list = *(old_hash_table + i);
+        old_list_length = l_longitud(old_list);
+        if(old_list_length > 0){
+            old_list_pos = l_primera(old_list);
+            while(old_list_length > 0){
+                old_list_entry = l_recuperar(old_list, old_list_pos);
+                index = hash_index((*m)->hash_code, old_list_entry->clave, (*m)->longitud_tabla);
+                l_insertar(*(hash_table + index), l_primera(*(hash_table + index)), old_list_entry);
+                old_list_pos = l_siguiente(old_list, old_list_pos);
+                old_list_length--;
+            }
+        }
     }
+    free(old_hash_table);
+    old_hash_table = NULL;
+    (*m)->tabla_hash = hash_table;
 }
 
 tValor m_insertar(tMapeo m, tClave c, tValor v){

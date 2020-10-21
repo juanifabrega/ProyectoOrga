@@ -52,22 +52,30 @@ int main(int argc, char * argv []) {
     }
     tMapeo m = NULL;
     crear_mapeo(&m, 101, hashCode, comparator);
-    char buff[BUFSIZE];
+    char line[BUFSIZE];
     char buffcpy[BUFSIZE];
     char * delimiter = " ";
     char * key = NULL;
     int * old_v = NULL;
     int * value = NULL;
-    while(fgets(buff, BUFSIZE-1, f) != NULL){
-        strcpy(buffcpy, buff);
+    while(fgets(line, BUFSIZE-1, f) != NULL){
+        strcpy(buffcpy, line);
         key = strtok(buffcpy, delimiter);
         while(key != NULL){
             old_v = m_recuperar(m, key);
             if(old_v == NULL){
                 value = malloc(sizeof(int));
+                if(value == NULL){
+                    printf("There was a memory error when creating the value variable.");
+                    return -2;
+                }
                 *value = 1;
             } else {
                 value = malloc(sizeof(int));
+                if(value == NULL){
+                    printf("There was a memory error when creating the value variable.");
+                    return -2;
+                }
                 *value = (*old_v)+1;
                 fDeleteV(old_v);
             }
