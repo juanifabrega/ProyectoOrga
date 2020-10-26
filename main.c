@@ -70,16 +70,10 @@ int main(int argc, char * argv []) {
                     return -2;
                 }
                 *value = 1;
+                m_insertar(m, key, value);
             } else {
-                value = malloc(sizeof(int));
-                if(value == NULL){
-                    printf("There was a memory error when creating the value variable.");
-                    return -2;
-                }
-                *value = (*old_v)+1;
-                fDeleteV(old_v);
+                (*old_v)++;
             }
-            m_insertar(m, key, value);
             key = strtok(NULL, delimiter);
         }
     }
