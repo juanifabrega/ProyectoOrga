@@ -60,7 +60,7 @@ int main(int argc, char * argv []) {
     tMapeo m = NULL;
     crear_mapeo(&m, 101, hashCode, comparator);
     char line[BUFSIZE];
-    char delimiters [] = " !,.;:ºª|/·#@$%&()?¿¡'_-{}[]+*^<>\"\\\n";
+    char delimiters [] = " !,.;:ºª|/·#@$%&()?¿¡_-{}[]+*^<>\"\\\n";
     char * k = NULL;
     int * old_v = NULL;
     char * key = NULL;

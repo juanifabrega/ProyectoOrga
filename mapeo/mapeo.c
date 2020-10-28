@@ -24,6 +24,14 @@ unsigned int hash_index(int (*hash_code)(void *), tClave k, unsigned int l){
 }
 
 /**
+ * No elimina el elemento e
+ * @param e el elemento
+ */
+void fNoEliminar(tElemento e){
+
+}
+
+/**
  * Elimina el elemento e
  * @param e el elemento
  */
@@ -49,9 +57,9 @@ void crear_mapeo(tMapeo * m, int ci, int (*fHash)(void *), int (*fComparacion)(v
     if((*m)->tabla_hash == NULL){
         exit(MAP_ERROR_MEMORIA);
     }
-    // insert empty lists in the map.
+    // insert empty lists in the table.
     for(int i = 0; i < capacity; i++){
-        crear_lista(&(*m)->tabla_hash[i]);
+        crear_lista((*m)->tabla_hash + i);
     }
 }
 
@@ -62,6 +70,13 @@ void rehash(tMapeo * m){
     (*m)->longitud_tabla *= 2;
     // create the new bucket array.
     tLista * hash_table = malloc((*m)->longitud_tabla * sizeof(tLista));
+    if(hash_table == NULL){
+        exit(MAP_ERROR_MEMORIA);
+    }
+    // insert empty lists in the new table.
+    for(int i = 0; i < (*m)->longitud_tabla; i++){
+        crear_lista(hash_table + i);
+    }
     tLista old_list;
     unsigned int old_list_length;
     tPosicion old_list_pos;
@@ -82,6 +97,7 @@ void rehash(tMapeo * m){
                 old_list_length--;
             }
         }
+        l_destruir(&old_list, fNoEliminar);
     }
     free(old_hash_table);
     old_hash_table = NULL;
