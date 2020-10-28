@@ -14,6 +14,7 @@
  * @param k the key
  */
 void fDeleteK(void * k){
+    free(k);
     k = NULL;
 }
 
@@ -32,6 +33,12 @@ int hashCode(void * key){
 
 int comparator(void * k1, void * k2){
     return strcmp(k1, k2) == 0;
+}
+
+void to_upper(char * word){
+    for(int i = 0; i < BUFSIZE; i++){
+        word[i] = (char) toupper(word[i]);
+    }
 }
 
 /**
@@ -53,16 +60,22 @@ int main(int argc, char * argv []) {
     tMapeo m = NULL;
     crear_mapeo(&m, 101, hashCode, comparator);
     char line[BUFSIZE];
-    char buffcpy[BUFSIZE];
-    char * delimiter = " ";
-    char * key = NULL;
+    char delimiters [] = " !,.;:ºª|/·#@$%&()?¿¡'_-{}[]+*^<>\"\\\n";
+    char * k = NULL;
     int * old_v = NULL;
+    char * key = NULL;
     int * value = NULL;
     while(fgets(line, BUFSIZE-1, f) != NULL){
-        strcpy(buffcpy, line);
-        key = strtok(buffcpy, delimiter);
+        to_upper(line);
+        k = malloc(BUFSIZE);
+        if(k == NULL){
+            printf("There was a memory error when creating the key variable.");
+            return -2;
+        }
+        key = strtok(line, delimiters);
         while(key != NULL){
             old_v = m_recuperar(m, key);
+            strcpy(k, key);
             if(old_v == NULL){
                 value = malloc(sizeof(int));
                 if(value == NULL){
@@ -70,17 +83,27 @@ int main(int argc, char * argv []) {
                     return -2;
                 }
                 *value = 1;
+                m_insertar(m, k, value);
             } else {
+                // We thought of modifying the old_v doing "(*old_v)++;"
+                // But we realized that the map already replaces values and, therefore, it would be better to use such property.
                 value = malloc(sizeof(int));
                 if(value == NULL){
                     printf("There was a memory error when creating the value variable.");
                     return -2;
                 }
                 *value = (*old_v) + 1;
+                m_insertar(m, key, value);
+                // free the memory allocated for the key and old value
+                fDeleteK(k);
                 fDeleteV(old_v);
             }
-            m_insertar(m, key, value);
-            key = strtok(NULL, delimiter);
+            k = malloc(BUFSIZE);
+            if(k == NULL){
+                printf("There was a memory error when creating the key variable.");
+                return -2;
+            }
+            key = strtok(NULL, delimiters);
         }
     }
     fclose(f);
@@ -96,6 +119,7 @@ int main(int argc, char * argv []) {
         if(choice == 1){
             printf("Your word: ");
             scanf("%s", word);
+            to_upper(word);
             word_count = m_recuperar(m, word);
             if(word_count == NULL){
                 printf("The word \"%s\" was not found.\n\n", word);
