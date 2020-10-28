@@ -1,3 +1,12 @@
+/*
+ * TDA Lista
+ *
+ * @author Juan Ignacio Fabrega
+ * @author Franco Caramelli Poeta
+ * @author Ezequiel Ramírez Beltrán
+ * 10/28/20
+ */
+
 #include <stdlib.h>
 #include "lista.h"
 
